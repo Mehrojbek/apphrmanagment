@@ -1,5 +1,8 @@
 package uz.pdp.apphrmanagment.component;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import uz.pdp.apphrmanagment.entity.User;
@@ -9,7 +12,9 @@ import java.util.*;
 import java.util.Collection;
 
 @Component
-public class AllMethod {
+public class AllNeedfullMethod {
+    @Autowired
+    JavaMailSender javaMailSender;
 
     //GET ROLE NUMBER
     public byte getRoleNumber(Collection<? extends GrantedAuthority> authorities){
@@ -30,6 +35,8 @@ public class AllMethod {
 
 
 
+
+
     //BAJARUVCHI KIMLIGINI ANIQLASH
     public byte getPerformers(List<User> userList){
 
@@ -44,5 +51,32 @@ public class AllMethod {
         return -1;
     }
 
+
+
+
+
+    //MAIL SENDER
+    public boolean sendEmail(String sendingEmail, String message, boolean verifyEmail, String subject){
+
+        try {
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            String text;
+
+            if (verifyEmail) {
+                text= "http://localhost:8080/api/auth/verifyEmail?email=" + sendingEmail + "&emailCode=" + message;
+            }else {
+                text=message;
+            }
+
+            mailMessage.setFrom("Company");
+            mailMessage.setTo(sendingEmail);
+            mailMessage.setSubject(subject);
+            mailMessage.setText(text);
+            javaMailSender.send(mailMessage);
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
 
 }

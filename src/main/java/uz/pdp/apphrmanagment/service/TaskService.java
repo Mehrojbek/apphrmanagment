@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
-import uz.pdp.apphrmanagment.component.AllMethod;
+import uz.pdp.apphrmanagment.component.AllNeedfullMethod;
 import uz.pdp.apphrmanagment.entity.Task;
 import uz.pdp.apphrmanagment.entity.User;
 import uz.pdp.apphrmanagment.entity.enums.TaskStatus;
@@ -21,11 +21,9 @@ public class TaskService {
     @Autowired
     TaskRepository taskRepository;
     @Autowired
-    AllMethod allMethod;
+    AllNeedfullMethod allNeedfullMethod;
     @Autowired
     UserRepository userRepository;
-    @Autowired
-    MailService mailService;
 
 
     //ADD TASK
@@ -36,12 +34,12 @@ public class TaskService {
         User user = (User) principal;
 
         //VAZIFA BERUVCHINING ROLI
-        byte taskCreater = allMethod.getRoleNumber(user.getAuthorities());
+        byte taskCreater = allNeedfullMethod.getRoleNumber(user.getAuthorities());
 
         List<User> userList = userRepository.findAllById(taskDto.getUsers());
 
         //BAJARUVCHI KIMLIGINI ANIQLASH YO WORKER YO MANAGER LAR GURUHI YOKI BIRLIGI BO'LISHI MUMKIN
-        byte performersRole = allMethod.getPerformers(userList);
+        byte performersRole = allNeedfullMethod.getPerformers(userList);
 
         //MANAGER VA WORKER BIRGALIKDA KELMASLIGI KERAK WORKERLARGA VAZIFA BIRIKTIRILGANDA MANAGERNING VAZIFASI ULARNI NAZORAT QILISH
         if (performersRole==-1)
@@ -80,9 +78,11 @@ public class TaskService {
 
         String message = "Sizga "+task.getName()+" nomli vazifa biriktirildi";
         String subject = "Yangi vazifa";
+
         for (User user : userList) {
-            mailService.sendEmail(user.getEmail(), message, false, subject);
+            allNeedfullMethod.sendEmail(user.getEmail(), message, false, subject);
         }
+
         return new ApiResponse("Muvaffaqiyatli yaratildi",true);
     }
 }

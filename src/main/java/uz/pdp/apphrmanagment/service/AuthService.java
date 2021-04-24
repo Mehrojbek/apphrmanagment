@@ -4,14 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import uz.pdp.apphrmanagment.component.AllMethod;
+import uz.pdp.apphrmanagment.component.AllNeedfullMethod;
 import uz.pdp.apphrmanagment.entity.User;
 import uz.pdp.apphrmanagment.entity.enums.RoleName;
 import uz.pdp.apphrmanagment.payload.ApiResponse;
@@ -22,7 +21,6 @@ import uz.pdp.apphrmanagment.repository.RoleRepository;
 import uz.pdp.apphrmanagment.repository.UserRepository;
 import uz.pdp.apphrmanagment.security.JwtProvider;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
@@ -38,11 +36,9 @@ public class AuthService implements UserDetailsService {
     @Autowired
     RoleRepository roleRepository;
     @Autowired
-    MailService mailService;
-    @Autowired
     JwtProvider jwtProvider;
     @Autowired
-    AllMethod allMethod;
+    AllNeedfullMethod allNeedfullMethod;
 
 
     //REGISTER NEW WORKER OR MANAGER
@@ -60,7 +56,7 @@ public class AuthService implements UserDetailsService {
         if (exists)
             return new ApiResponse("Ushbu emailli foydalanuvchi tizimda mavjud",false);
 
-        byte roleNumber = allMethod.getRoleNumber(user.getAuthorities());
+        byte roleNumber = allNeedfullMethod.getRoleNumber(user.getAuthorities());
 
         RoleName roleName = RoleName.valueOf(registerDto.getRoleName());
 
@@ -135,7 +131,7 @@ public class AuthService implements UserDetailsService {
 
         userRepository.save(user);
 
-        mailService.sendEmail(user.getEmail(), user.getEmailCode(), true, "Emailni tasdiqlash");
+        allNeedfullMethod.sendEmail(user.getEmail(), user.getEmailCode(), true, "Emailni tasdiqlash");
         return new ApiResponse(roleName.simpleName + " added", true);
     }
 
