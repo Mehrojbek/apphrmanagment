@@ -11,11 +11,13 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import uz.pdp.apphrmanagment.component.AllMethod;
 import uz.pdp.apphrmanagment.entity.User;
 import uz.pdp.apphrmanagment.entity.enums.RoleName;
 import uz.pdp.apphrmanagment.payload.ApiResponse;
 import uz.pdp.apphrmanagment.payload.LoginDto;
 import uz.pdp.apphrmanagment.payload.RegisterDto;
+import uz.pdp.apphrmanagment.payload.VerifyDto;
 import uz.pdp.apphrmanagment.repository.RoleRepository;
 import uz.pdp.apphrmanagment.repository.UserRepository;
 import uz.pdp.apphrmanagment.security.JwtProvider;
@@ -39,15 +41,13 @@ public class AuthService implements UserDetailsService {
     MailService mailService;
     @Autowired
     JwtProvider jwtProvider;
+    @Autowired
+    AllMethod allMethod;
 
 
     //REGISTER NEW WORKER OR MANAGER
     public ApiResponse register(RegisterDto registerDto) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        //DIRECTOR TIZIM ISHGA TUSHGANDA QO'SHILGANLIGI SABABLI HECH QANDAY ANONYMOUS_USER BO'LISHI MUMKIN EMAS
-        if (principal.equals("anonymousUser"))
-            return new ApiResponse("Xatolik", false);
 
         //BU YERGACHA KELGAN USER ALBATTA USER DETAILS DAN VORIS OLGAN BO'LISHI KERAK
         if (!(principal instanceof UserDetails))
@@ -60,23 +60,9 @@ public class AuthService implements UserDetailsService {
         if (exists)
             return new ApiResponse("Ushbu emailli foydalanuvchi tizimda mavjud",false);
 
+        byte roleNumber = allMethod.getRoleNumber(user.getAuthorities());
 
-        Collection<? extends GrantedAuthority> authorities = user.getAuthorities();
-
-        byte roleNumber = 0;
-
-        //GET ROLE FROM USER
-        for (GrantedAuthority authority : authorities) {
-            if (authority.getAuthority().equals(RoleName.ROLE_MANAGER.name())) {
-                roleNumber = 1;
-            }
-
-            if (authority.getAuthority().equals(RoleName.ROLE_DIRECTOR.name())) {
-                roleNumber = 2;
-            }
-        }
-
-        RoleName roleName = registerDto.getRoleName();
+        RoleName roleName = RoleName.valueOf(registerDto.getRoleName());
 
         //ADD WORKER //DIRECTOR VA MANAGER BO'LSAGINA WORKER QO'SHA OLADI
         if (roleName.equals(RoleName.ROLE_WORKER) && (roleNumber == 1 || roleNumber == 2))
@@ -102,6 +88,7 @@ public class AuthService implements UserDetailsService {
                     loginDto.getUsername(), loginDto.getPassword()));
             User user = (User) authenticate.getPrincipal();
             String token = jwtProvider.generateToken(loginDto.getUsername(), user.getRoles());
+            token="Bearer "+token;
             return new ApiResponse("Token",true,token);
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,24 +97,46 @@ public class AuthService implements UserDetailsService {
     }
 
 
-    public ApiResponse verify(RegisterDto registerDto) {
 
-        return null;
+
+    //VERIFY EMAIL
+    public ApiResponse verify(String email, String emailCode, VerifyDto verifyDto) {
+        Optional<User> optionalUser = userRepository.findByEmailAndEmailCode(email, emailCode);
+        if (!optionalUser.isPresent())
+            return new ApiResponse("Ushbu user allaqachon faollashtirilgan",false);
+
+        User user = optionalUser.get();
+
+        user.setFirstName(verifyDto.getFirstName());
+        user.setLastName(verifyDto.getLastName());
+        user.setPassword(verifyDto.getPassword());
+        user.setEnabled(true);
+        user.setEmailCode(null);
+
+        userRepository.save(user);
+
+        return new ApiResponse("Muvaffaqiyatli faollashtirildi",true);
     }
+
+
+
 
 
     //METHOD FOR SAVE
     public ApiResponse saveUser(RegisterDto registerDto, RoleName roleName) {
         User user = new User();
+
         user.setFirstName(registerDto.getFirstName());
         user.setLastName(registerDto.getLastName());
         user.setEmail(registerDto.getEmail());
         user.setPassword(passwordEncoder.encode("0000"));
         user.setRoles(Collections.singleton(roleRepository.getByName(roleName)));
         user.setEmailCode(UUID.randomUUID().toString());
+
         userRepository.save(user);
+
         mailService.sendEmail(user.getEmail(), user.getEmailCode(), true, "Emailni tasdiqlash");
-        return new ApiResponse(roleName.name() + " added", true);
+        return new ApiResponse(roleName.simpleName + " added", true);
     }
 
 

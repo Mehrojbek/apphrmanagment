@@ -25,4 +25,20 @@ public class JwtProvider {
                 .compact();
         return token;
     }
+
+
+
+    public String getUsername(String  token){
+       try {
+           String username = Jwts
+                   .parser()
+                   .setSigningKey(SECRET_KEY)
+                   .parseClaimsJws(token)
+                   .getBody()
+                   .getSubject();
+           return username;
+       }catch (Exception e){
+           return null;
+       }
+    }
 }

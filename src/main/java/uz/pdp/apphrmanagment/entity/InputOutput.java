@@ -23,5 +23,5 @@ public class InputOutput {
     private Timestamp time;
 
     @ManyToOne
-    private Turniket turniket;
+    private User user;
 }

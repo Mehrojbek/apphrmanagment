@@ -16,10 +16,11 @@ public class MailService {
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             String text;
+
             if (verifyEmail) {
                  text= "http://localhost:8080/api/auth/verifyEmail?email=" + sendingEmail + "&emailCode=" + message;
             }else {
-                text=message;
+                 text=message;
             }
 
             mailMessage.setFrom("Company");
