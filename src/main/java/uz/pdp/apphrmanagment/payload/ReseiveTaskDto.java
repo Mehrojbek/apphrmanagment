@@ -1,23 +1,18 @@
 package uz.pdp.apphrmanagment.payload;
+
 import lombok.Data;
+
 import javax.validation.constraints.NotNull;
-import java.sql.Date;
 import java.util.UUID;
 
-
-
 @Data
-public class TaskDto {
-
+public class ReseiveTaskDto {
     @NotNull
-    private String name;
-
-    @NotNull
-    private String description;
-
-    @NotNull
-    private Date deadline;
+    private UUID taskId;
 
     @NotNull
     private UUID performerId;
+
+    @NotNull
+    private boolean acceptedByPerformer;
 }

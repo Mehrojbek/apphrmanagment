@@ -39,6 +39,8 @@ public class Task {
     @Column(nullable = false)
     private Date deadline;
 
+    private boolean acceptedByPerformer;//XODIM VAZIFANI QABUL QILGANMI
+
     @CreatedBy
     private UUID createdBy;
 
@@ -52,6 +54,8 @@ public class Task {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    @ManyToMany
-    private Set<User> users;
+    @ManyToOne
+    private User performer;//BAJARUVCHI
+
+
 }

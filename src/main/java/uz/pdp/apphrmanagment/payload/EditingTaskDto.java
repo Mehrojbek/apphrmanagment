@@ -1,14 +1,12 @@
 package uz.pdp.apphrmanagment.payload;
+
 import lombok.Data;
+
 import javax.validation.constraints.NotNull;
 import java.sql.Date;
 import java.util.UUID;
-
-
-
 @Data
-public class TaskDto {
-
+public class EditingTaskDto {
     @NotNull
     private String name;
 
@@ -20,4 +18,7 @@ public class TaskDto {
 
     @NotNull
     private UUID performerId;
+
+    @NotNull
+    private String status;
 }

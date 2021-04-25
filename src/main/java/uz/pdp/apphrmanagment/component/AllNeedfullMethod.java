@@ -17,18 +17,20 @@ public class AllNeedfullMethod {
     JavaMailSender javaMailSender;
 
     //GET ROLE NUMBER
-    public byte getRoleNumber(Collection<? extends GrantedAuthority> authorities){
-        byte roleNumber = 0;
+    public byte getRoleNumber(Collection<? extends GrantedAuthority> authorities) {
+        byte roleNumber = -1;
 
         //GET ROLE FROM USER
         for (GrantedAuthority authority : authorities) {
-            if (authority.getAuthority().equals(RoleName.ROLE_MANAGER.name())) {
-                roleNumber = 1;
-            }
+            if (authority.getAuthority().equals(RoleName.ROLE_WORKER.name()))
+                roleNumber = 0;
 
-            if (authority.getAuthority().equals(RoleName.ROLE_DIRECTOR.name())) {
+            if (authority.getAuthority().equals(RoleName.ROLE_MANAGER.name()))
+                roleNumber = 1;
+
+            if (authority.getAuthority().equals(RoleName.ROLE_DIRECTOR.name()))
                 roleNumber = 2;
-            }
+
         }
         return roleNumber;
     }
@@ -36,37 +38,16 @@ public class AllNeedfullMethod {
 
 
 
-
-    //BAJARUVCHI KIMLIGINI ANIQLASH
-    public byte getPerformers(List<User> userList){
-
-        for (User user : userList) {
-            byte roleNumber = getRoleNumber(user.getAuthorities());
-            if (roleNumber==0)
-                return 0;
-            if (roleNumber==1)
-                return 1;
-        }
-
-        return -1;
-    }
-
-
-
-
-
     //MAIL SENDER
-    public boolean sendEmail(String sendingEmail, String message, boolean verifyEmail, String subject){
+    public boolean sendEmail(String sendingEmail, String message, boolean verifyEmail, String subject) {
 
         try {
             SimpleMailMessage mailMessage = new SimpleMailMessage();
             String text;
 
             if (verifyEmail) {
-                text= "http://localhost:8080/api/auth/verifyEmail?email=" + sendingEmail + "&emailCode=" + message;
-            }else {
-                text=message;
-            }
+                text = "http://localhost:8080/api/auth/verifyEmail?email=" + sendingEmail + "&emailCode=" + message;
+            } else { text = message; }
 
             mailMessage.setFrom("Company");
             mailMessage.setTo(sendingEmail);
@@ -74,9 +55,11 @@ public class AllNeedfullMethod {
             mailMessage.setText(text);
             javaMailSender.send(mailMessage);
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
+
+
 
 }

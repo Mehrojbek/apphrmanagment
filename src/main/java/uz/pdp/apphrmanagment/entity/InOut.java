@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @Entity
-public class InputOutput {
+public class InOut {
     @Id
     @GeneratedValue
     private UUID id;
