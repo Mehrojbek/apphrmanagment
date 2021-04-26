@@ -16,6 +16,7 @@ public class MonthlySalaryController {
     @Autowired
     MonthlySalaryService monthlySalaryService;
 
+
     @PostMapping("/add")
     public HttpEntity<?> add(@RequestBody MonthlySalaryDto monthlySalaryDto){
         ApiResponse apiResponse = monthlySalaryService.add(monthlySalaryDto);

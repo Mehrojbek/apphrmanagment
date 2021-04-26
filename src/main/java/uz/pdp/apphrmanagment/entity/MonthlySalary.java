@@ -30,7 +30,7 @@ public class MonthlySalary {
     private MonthName monthName;
 
     @ManyToOne
-    private User user;
+    private User worker;
 
     @Column(updatable = false)
     @CreationTimestamp

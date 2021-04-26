@@ -1,6 +1,7 @@
 package uz.pdp.apphrmanagment.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import uz.pdp.apphrmanagment.entity.User;
 
 import java.util.Optional;
@@ -14,4 +15,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmailAndEmailCode(String email, String emailCode);
 
     List<User> findAllByCreatedBy(UUID createdBy);
+
+
 }

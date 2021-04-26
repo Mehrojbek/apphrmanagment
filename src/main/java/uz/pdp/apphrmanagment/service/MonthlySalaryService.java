@@ -41,7 +41,7 @@ public class MonthlySalaryService {
         if (roleNumber == 2 || worker.getCreatedBy().equals(user.getId())) {
             MonthlySalary monthlySalary = new MonthlySalary();
             monthlySalary.setAmount(monthlySalaryDto.getAmount());
-            monthlySalary.setUser(worker);
+            monthlySalary.setWorker(worker);
             monthlySalary.setMonthName(MonthName.valueOf(monthlySalaryDto.getMonthName()));
             monthlySalaryRepository.save(monthlySalary);
 
@@ -69,9 +69,18 @@ public class MonthlySalaryService {
         MonthlySalary monthlySalary = optionalMonthlySalary.get();
 
         if (roleNumber == 2 || user.getId().equals(monthlySalary.getCreatedBy())){
+            Optional<User> optionalWorker = userRepository.findById(monthlySalaryDto.getUserId());
+            if (!optionalWorker.isPresent())
+                return new ApiResponse("Ishchi topilmadi",false);
 
+            monthlySalary.setAmount(monthlySalaryDto.getAmount());
+            monthlySalary.setMonthName(MonthName.valueOf(monthlySalaryDto.getMonthName()));
+            monthlySalary.setWorker(optionalWorker.get());
+
+            monthlySalaryRepository.save(monthlySalary);
+            return new ApiResponse("Muvaffaqiyatli tahrirlandi",true);
         }
 
-        return null;
+        return new ApiResponse("Xatolik",false);
     }
 }

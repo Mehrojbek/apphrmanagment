@@ -10,7 +10,6 @@ import uz.pdp.apphrmanagment.entity.User;
 import uz.pdp.apphrmanagment.entity.enums.TaskStatus;
 import uz.pdp.apphrmanagment.payload.ApiResponse;
 import uz.pdp.apphrmanagment.payload.EditingTaskDto;
-import uz.pdp.apphrmanagment.payload.ReseiveTaskDto;
 import uz.pdp.apphrmanagment.payload.TaskDto;
 import uz.pdp.apphrmanagment.repository.TaskRepository;
 import uz.pdp.apphrmanagment.repository.UserRepository;
@@ -31,10 +30,10 @@ public class TaskService {
 
     //ADD TASK
     public ApiResponse add(TaskDto taskDto) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!(principal instanceof UserDetails))
+        User user = allNeedfullMethod.getUserFromPrincipal();
+        if (user == null)
             return new ApiResponse("Xatolik", false);
-        User user = (User) principal;
+
 
         //VAZIFA BERUVCHINING ROLI
         byte taskCreater = allNeedfullMethod.getRoleNumber(user.getAuthorities());
@@ -68,8 +67,13 @@ public class TaskService {
 
 
     //RESEIVE TASK
-    public ApiResponse reseiveTask(ReseiveTaskDto reseiveTaskDto) {
-        Optional<Task> optionalTask = taskRepository.findByIdAndPerformerId(reseiveTaskDto.getTaskId(), reseiveTaskDto.getPerformerId());
+    public ApiResponse reseiveTask(boolean accept, UUID taskId) {
+
+        User user = allNeedfullMethod.getUserFromPrincipal();
+        if (user == null)
+            return new ApiResponse("Xatolik",false);
+
+        Optional<Task> optionalTask = taskRepository.findByIdAndPerformerId(taskId);
         if (!optionalTask.isPresent())
             return new ApiResponse("Xatolik", false);
 
@@ -82,34 +86,40 @@ public class TaskService {
 
         String message;
         String subject;
-        if (reseiveTaskDto.isAcceptedByPerformer()) {
+        //TIZIMDAGI USER SHU TASK NI BAJARUVCHISIMI
+        if (task.getPerformer().equals(user)) {
+            //USER TASKNI QABUL QILDI
+            if (accept) {
+                task.setAcceptedByPerformer(true);
+                task.setStatus(TaskStatus.STATUS_PROGRESS);
+                taskRepository.save(task);
 
-            task.setAcceptedByPerformer(true);
-            task.setStatus(TaskStatus.STATUS_PROGRESS);
-            taskRepository.save(task);
+                message = task.getPerformer().getFirstName() + " siz biriktirgan " + task.getName() + " vazifasini qabul qildi";
+                subject = "Vazifa qabul qilindi";
+                allNeedfullMethod.sendEmail(creater.getEmail(), message, false, subject);
 
-            message = task.getPerformer().getFirstName() + " siz biriktirgan " + task.getName() + " vazifasini qabul qildi";
-            subject = "Vazifa qabul qilindi";
+                return new ApiResponse("Vazifani qabul qildingiz", true);
+            }
+
+            //USER TASKNI ABUL QILMADI
+            message = task.getPerformer().getFirstName() + " siz biriktirgan " + task.getName() + " vazifasini qabul qilmadi";
+            subject = "Vazifa qabul qilinmadi";
             allNeedfullMethod.sendEmail(creater.getEmail(), message, false, subject);
 
-            return new ApiResponse("Vazifani qabul qildingiz", true);
+            return new ApiResponse("Vazifa rad etildi", true);
         }
 
-        message = task.getPerformer().getFirstName() + " siz biriktirgan " + task.getName() + " vazifasini qabul qilmadi";
-        subject = "Vazifa qabul qilinmadi";
-        allNeedfullMethod.sendEmail(creater.getEmail(), message, false, subject);
-
-        return new ApiResponse("Vazifa rad etildi", true);
+        return new ApiResponse("Xatolik",false);
     }
 
 
     //EDIT TASK
     public ApiResponse edit(UUID id, EditingTaskDto editingTaskDto) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!(principal instanceof UserDetails))
-            return new ApiResponse("Xatolik", false);
+
         //SHU YO'LGA KELGAN VA VAZIFANI EDIT QILMOQCHI BO'LGAN USER
-        User editorUser = (User) principal;
+        User editorUser = allNeedfullMethod.getUserFromPrincipal();
+        if (editorUser == null)
+            return new ApiResponse("Xatolik", false);
 
         //BU USERNING ROLINI ANIQLASH
         byte roleNumber = allNeedfullMethod.getRoleNumber(editorUser.getAuthorities());

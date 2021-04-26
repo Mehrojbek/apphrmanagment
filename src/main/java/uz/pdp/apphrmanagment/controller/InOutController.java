@@ -8,7 +8,7 @@ import uz.pdp.apphrmanagment.payload.InOutDto;
 import uz.pdp.apphrmanagment.service.InOutService;
 
 @RestController
-@RequestMapping("/api/inOut")
+@RequestMapping("/api/inOut") //BU YO'LGA FAQAT QURILMA TOMONIDAN MUROJAAT QILINADI
 public class InOutController {
     @Autowired
     InOutService inOutService;

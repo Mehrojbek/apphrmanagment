@@ -43,13 +43,10 @@ public class AuthService implements UserDetailsService {
 
     //REGISTER NEW WORKER OR MANAGER
     public ApiResponse register(RegisterDto registerDto) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        //BU YERGACHA KELGAN USER ALBATTA USER DETAILS DAN VORIS OLGAN BO'LISHI KERAK
-        if (!(principal instanceof UserDetails))
+        User user = allNeedfullMethod.getUserFromPrincipal();
+        if (user == null)
             return new ApiResponse("Xatolik", false);
-
-        User user = (User) principal;
 
         //CHECK UNIQUE EMAIL
         boolean exists = userRepository.existsByEmail(registerDto.getEmail());

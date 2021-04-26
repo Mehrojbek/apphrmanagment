@@ -1,13 +1,11 @@
 package uz.pdp.apphrmanagment.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.apphrmanagment.payload.ApiResponse;
 import uz.pdp.apphrmanagment.payload.EditingTaskDto;
-import uz.pdp.apphrmanagment.payload.ReseiveTaskDto;
 import uz.pdp.apphrmanagment.payload.TaskDto;
 import uz.pdp.apphrmanagment.service.TaskService;
 
@@ -29,9 +27,9 @@ public class TaskController {
     }
 
 
-    @PostMapping("/reseive")
-    public HttpEntity<?> reseiveTask(@RequestBody @Valid ReseiveTaskDto reseiveTaskDto){
-        ApiResponse apiResponse = taskService.reseiveTask(reseiveTaskDto);
+    @GetMapping("/reseive")
+    public HttpEntity<?> reseiveTask(@RequestParam boolean accept, @RequestParam UUID taskId){
+        ApiResponse apiResponse = taskService.reseiveTask(accept,taskId);
         return ResponseEntity.status(apiResponse.isSuccess()?200:409).body(apiResponse);
     }
 

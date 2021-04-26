@@ -6,13 +6,10 @@ import javax.validation.constraints.NotNull;
 import java.util.UUID;
 
 @Data
-public class ReseiveTaskDto {
-    @NotNull
-    private UUID taskId;
+public class GetSalaryDto {
 
     @NotNull
-    private UUID performerId;
+    private String monthName;
 
-    @NotNull
-    private boolean acceptedByPerformer;
+    private UUID workerId;
 }
