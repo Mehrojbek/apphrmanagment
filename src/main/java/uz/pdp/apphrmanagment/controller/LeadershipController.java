@@ -30,5 +30,5 @@ public class LeadershipController {
         return ResponseEntity.status(apiResponse.isSuccess()?200:401).body(apiResponse);
     }
 
-    @PostMapping("/")
+    //@PostMapping
 }

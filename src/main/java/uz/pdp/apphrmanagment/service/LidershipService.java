@@ -19,12 +19,11 @@ public class LidershipService {
     AllNeedfullMethod allNeedfullMethod;
 
     public List<User> getAllWorker(){
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (!(principal instanceof UserDetails))
+
+        User user = allNeedfullMethod.getUserFromPrincipal();
+        if (user == null)
             return new ArrayList<>();
-
-        User user = (User) principal;
 
         byte roleNumber = allNeedfullMethod.getRoleNumber(user.getAuthorities());
 
@@ -41,6 +40,7 @@ public class LidershipService {
 
 
     public ApiResponse getOneWorker(UUID id){
+        //TIZIMGA KIRGAN USER NI ANIQLASH
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (!(principal instanceof UserDetails))
@@ -48,6 +48,7 @@ public class LidershipService {
 
         User user = (User) principal;
 
+        //USER ROLINI ANIQLASH
         byte roleNumber = allNeedfullMethod.getRoleNumber(user.getAuthorities());
 
         if (roleNumber == 1 || roleNumber == 2) {
@@ -58,12 +59,15 @@ public class LidershipService {
 
             User worker = optionalWorker.get();
 
+            //DIRECTOR XOHLAGAN ISHCHI HAQIDAGI MA'LUMOTNI OLISHI MUMKIN
             if (roleNumber == 2)
                 return new ApiResponse("Muvaffaqiyatli bajarildi",true,worker);
 
+            //MANAGER ESA O'ZI QO'SHGAN ISHCHI HAQIDA MA'LUMOTNI OLISHI MUMKIN
             if (worker.getCreatedBy().equals(user.getId()))
                 return new ApiResponse("Muvaffaqiyatli bajarildi",true,worker);
         }
+        //BOSHQA HAR QANDAY HOLATDA XATOLIK
         return new ApiResponse("Xatolik",false);
     }
 }
