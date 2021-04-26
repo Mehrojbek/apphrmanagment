@@ -6,12 +6,11 @@ import uz.pdp.apphrmanagment.entity.Task;
 import uz.pdp.apphrmanagment.entity.enums.TaskStatus;
 
 import java.sql.Timestamp;
-import java.util.Optional;
+
 import java.util.UUID;
 import java.util.*;
 
 public interface TaskRepository extends JpaRepository<Task, UUID> {
-    Optional<Task> findByIdAndPerformerId(UUID id);
     List<Task> findAllByPerformerId(UUID performer_id);
     List<Task> findAllByCreatedBy(UUID createdBy);
 

@@ -39,6 +39,8 @@ public class Task {
     @Column(nullable = false)
     private Date deadline;
 
+    private boolean completeByDeadline;//o'z vaqtida tugatilganmi
+
     private boolean acceptedByPerformer;//XODIM VAZIFANI QABUL QILGANMI
 
     @CreatedBy

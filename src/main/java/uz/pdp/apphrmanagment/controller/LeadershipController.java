@@ -1,34 +1,37 @@
 package uz.pdp.apphrmanagment.controller;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
-import uz.pdp.apphrmanagment.entity.User;
 import uz.pdp.apphrmanagment.payload.ApiResponse;
 import uz.pdp.apphrmanagment.payload.GetSalaryDto;
 import uz.pdp.apphrmanagment.payload.WorkerDto;
-import uz.pdp.apphrmanagment.service.LidershipService;
+import uz.pdp.apphrmanagment.service.LeadershipService;
 
 import java.util.*;
 
 @RestController
 @RequestMapping("/api/leadership")
-public class LidershipController {
+public class LeadershipController {
     @Autowired
-    LidershipService lidershipService;
+    LeadershipService leadershipService;
 
     //GET ALL WORKER
     @GetMapping
     public HttpEntity<?> getAllWorker(){
-        ApiResponse apiResponse = lidershipService.getAllWorker();
+        ApiResponse apiResponse = leadershipService.getAllWorker();
         return ResponseEntity.status(apiResponse.isSuccess()?200:401).body(apiResponse);
     }
 
     //GET ONE WORKER
     @GetMapping("/worker/{id}")
     public HttpEntity<?> getOneWorker(@PathVariable UUID id){
-        ApiResponse apiResponse = lidershipService.getOneWorker(id);
+        ApiResponse apiResponse = leadershipService.getOneWorker(id);
         return ResponseEntity.status(apiResponse.isSuccess()?200:401).body(apiResponse);
     }
 
@@ -37,7 +40,7 @@ public class LidershipController {
     //COMPLETE BO'LGAN BARCHA VAZIFALAR
     @GetMapping("/completeTasks")
     public HttpEntity<?> getCompleteInDeadline(){
-        ApiResponse apiResponse = lidershipService.getCompleteTasks();
+        ApiResponse apiResponse = leadershipService.getCompleteTasks();
         return ResponseEntity.status(apiResponse.isSuccess()?200:401).body(apiResponse);
     }
 
@@ -49,7 +52,7 @@ public class LidershipController {
      */
     @PostMapping("/salary")
     public HttpEntity<?> getSalaryOfWorker(@RequestBody GetSalaryDto getSalaryDto){
-        ApiResponse apiResponse = lidershipService.getSalaryOfWorker(getSalaryDto);
+        ApiResponse apiResponse = leadershipService.getSalaryOfWorker(getSalaryDto);
         return ResponseEntity.status(apiResponse.isSuccess()?200:401).body(apiResponse);
     }
 
@@ -62,7 +65,7 @@ public class LidershipController {
      */
     @PostMapping("/worker/{id}")
     public HttpEntity<?> getInfoOfWorker(@PathVariable UUID id,@RequestBody WorkerDto workerDto){
-        ApiResponse apiResponse = lidershipService.getInfoOfWorker(id, workerDto);
+        ApiResponse apiResponse = leadershipService.getInfoOfWorker(id, workerDto);
         return ResponseEntity.status(apiResponse.isSuccess()?200:401).body(apiResponse);
     }
 

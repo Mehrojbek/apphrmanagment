@@ -73,7 +73,7 @@ public class TaskService {
         if (user == null)
             return new ApiResponse("Xatolik",false);
 
-        Optional<Task> optionalTask = taskRepository.findByIdAndPerformerId(taskId);
+        Optional<Task> optionalTask = taskRepository.findById(taskId);
         if (!optionalTask.isPresent())
             return new ApiResponse("Xatolik", false);
 
@@ -185,11 +185,11 @@ public class TaskService {
 
     //COMPLETE TASK
     public ApiResponse complete(UUID id){
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (!(principal instanceof UserDetails))
-            return new ApiResponse("Xatolik", false);
+
         //SHU YO'LGA KELGAN USER
-        User editorUser = (User) principal;
+        User editorUser = allNeedfullMethod.getUserFromPrincipal();
+        if (editorUser == null)
+            return new ApiResponse("Xatolik", false);
 
         Optional<Task> optionalTask = taskRepository.findById(id);
         if (!optionalTask.isPresent())
@@ -207,7 +207,12 @@ public class TaskService {
             return new ApiResponse("Vazifani yaratuvchisi topilmadi",false);
         User taskCreater = optionalTaskCreater.get();
 
+        //EDITOR USER SHU VAZIFAGA BIRIKTIRILGAN PERFORMER BO'LSA
         if (editorUser.equals(performer)){
+            //DEADLINEGACHA BAJARILGANMI
+            if (editingTask.getDeadline().after(new Date()))
+                editingTask.setCompleteByDeadline(true);
+
             editingTask.setStatus(TaskStatus.STATUS_DONE);
             taskRepository.save(editingTask);
 

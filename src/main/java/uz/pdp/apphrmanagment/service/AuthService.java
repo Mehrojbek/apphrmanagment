@@ -1,5 +1,8 @@
 package uz.pdp.apphrmanagment.service;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,8 +28,9 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 
+
 @Service
-public class AuthService implements UserDetailsService {
+public class AuthService implements UserDetailsService{
     @Autowired
     UserRepository userRepository;
     @Autowired

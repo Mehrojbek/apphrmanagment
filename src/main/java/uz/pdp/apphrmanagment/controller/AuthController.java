@@ -34,7 +34,6 @@ public class AuthController {
 
     //VERIFY EMAIL YO'LIGA GET BILAN MUROJAAT BO'LGANDA FRONT GA
     // FORM CHIQARIB BERILADI VA VERIFY_DTO TURIDAGI MA'LUMOTLAR KIRITILIB POST BILAN JO'NATILADI
-
     @PostMapping("/verifyEmail")
     public HttpEntity<?> verify(@RequestParam String email, @RequestParam String emailCode,
                                 @RequestBody @Valid VerifyDto verifyDto){

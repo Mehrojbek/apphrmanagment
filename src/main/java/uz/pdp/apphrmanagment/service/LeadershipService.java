@@ -22,7 +22,7 @@ import uz.pdp.apphrmanagment.repository.UserRepository;
 import java.util.*;
 
 @Service
-public class LidershipService {
+public class LeadershipService {
     @Autowired
     UserRepository userRepository;
     @Autowired
