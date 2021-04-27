@@ -5,9 +5,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import uz.pdp.apphrmanagment.entity.Month;
 import uz.pdp.apphrmanagment.entity.Role;
 import uz.pdp.apphrmanagment.entity.User;
+import uz.pdp.apphrmanagment.entity.enums.MonthName;
 import uz.pdp.apphrmanagment.entity.enums.RoleName;
+import uz.pdp.apphrmanagment.repository.MonthRepository;
 import uz.pdp.apphrmanagment.repository.RoleRepository;
 import uz.pdp.apphrmanagment.repository.UserRepository;
 
@@ -22,6 +25,8 @@ public class DataLoader implements CommandLineRunner {
     UserRepository userRepository;
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Autowired
+    MonthRepository monthRepository;
 
 
     @Value(value = "${spring.datasource.initialization-mode}")
@@ -30,6 +35,14 @@ public class DataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (initialMode.equals("always")){
+
+            for (MonthName value : MonthName.values()) {
+                Month month = new Month();
+                month.setMonthName(value);
+                monthRepository.save(month);
+            }
+
+
 
             List<Role> roles = new ArrayList<>(
                     Arrays.asList(

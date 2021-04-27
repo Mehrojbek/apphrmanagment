@@ -9,7 +9,7 @@ import java.util.UUID;
 public class GetSalaryDto {
 
     @NotNull
-    private String monthName;
+    private Integer monthId;
 
     private UUID workerId;
 }

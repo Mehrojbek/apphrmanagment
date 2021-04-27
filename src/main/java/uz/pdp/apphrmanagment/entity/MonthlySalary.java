@@ -26,8 +26,8 @@ public class MonthlySalary {
 
     private Double amount;
 
-    @Enumerated(EnumType.STRING)
-    private MonthName monthName;
+    @ManyToOne
+    private Month month;
 
     @ManyToOne
     private User worker;

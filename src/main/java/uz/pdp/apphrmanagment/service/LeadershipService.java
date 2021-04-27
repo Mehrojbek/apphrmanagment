@@ -9,7 +9,6 @@ import uz.pdp.apphrmanagment.entity.InOut;
 import uz.pdp.apphrmanagment.entity.MonthlySalary;
 import uz.pdp.apphrmanagment.entity.Task;
 import uz.pdp.apphrmanagment.entity.User;
-import uz.pdp.apphrmanagment.entity.enums.MonthName;
 import uz.pdp.apphrmanagment.entity.enums.TaskStatus;
 import uz.pdp.apphrmanagment.payload.ApiResponse;
 import uz.pdp.apphrmanagment.payload.GetSalaryDto;
@@ -131,10 +130,10 @@ public class LeadershipService {
             List<MonthlySalary> salaryList;
             //AGAR WORKER_ID BERILGAN BO'LSA
             if (getSalaryDto.getWorkerId() != null) {
-                salaryList = monthlySalaryRepository.findAllByWorkerIdAndMonthName(worker.getId(), MonthName.valueOf(getSalaryDto.getMonthName()));
+                salaryList = monthlySalaryRepository.findAllByWorkerIdAndMonth_Id(getSalaryDto.getWorkerId(),getSalaryDto.getMonthId());
             }
             //AGAR WORKER_ID BERILMAGAN BO'LSA BARCHA XODIMLARGA BERILGAN OYLIKLAR RO'YXATI KETADI
-            salaryList = monthlySalaryRepository.findAllByMonthName(MonthName.valueOf(getSalaryDto.getMonthName()));
+            salaryList = monthlySalaryRepository.findAllByMonth_Id(getSalaryDto.getMonthId());
             return new ApiResponse("Muvaffaqiyatli bajarildi",true,salaryList);
         }
         return new ApiResponse("Xatolik",false);

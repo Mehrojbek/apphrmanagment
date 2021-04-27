@@ -11,7 +11,7 @@ public class MonthlySalaryDto {
     private Double amount;
 
     @NotNull
-    private String monthName;
+    private Integer monthId;
 
     @NotNull
     private UUID userId;

@@ -8,6 +8,7 @@ import uz.pdp.apphrmanagment.entity.User;
 import uz.pdp.apphrmanagment.entity.enums.MonthName;
 import uz.pdp.apphrmanagment.payload.ApiResponse;
 import uz.pdp.apphrmanagment.payload.MonthlySalaryDto;
+import uz.pdp.apphrmanagment.repository.MonthRepository;
 import uz.pdp.apphrmanagment.repository.MonthlySalaryRepository;
 import uz.pdp.apphrmanagment.repository.UserRepository;
 
@@ -20,6 +21,8 @@ public class MonthlySalaryService {
     AllNeedfullMethod allNeedfullMethod;
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    MonthRepository monthRepository;
 
     @Autowired
     MonthlySalaryRepository monthlySalaryRepository;
@@ -42,10 +45,10 @@ public class MonthlySalaryService {
             MonthlySalary monthlySalary = new MonthlySalary();
             monthlySalary.setAmount(monthlySalaryDto.getAmount());
             monthlySalary.setWorker(worker);
-            monthlySalary.setMonthName(MonthName.valueOf(monthlySalaryDto.getMonthName()));
+            monthlySalary.setMonth(monthRepository.getOne(monthlySalaryDto.getMonthId()));
             monthlySalaryRepository.save(monthlySalary);
 
-            String message = "Sizga "+monthlySalaryDto.getAmount()+" miqdorida maosh, "+monthlySalaryDto.getMonthName()+"oyi uchun belgilandi";
+            String message = "Sizga "+monthlySalaryDto.getAmount()+" miqdorida maosh, "+monthlySalaryDto.getMonthId()+"oyi uchun belgilandi";
             String subject = "Oylik belgilandi";
             allNeedfullMethod.sendEmail(worker.getEmail(), message,false,subject);
             return new ApiResponse("Muvaffaqiyatli bajarildi",true);
@@ -74,7 +77,7 @@ public class MonthlySalaryService {
                 return new ApiResponse("Ishchi topilmadi",false);
 
             monthlySalary.setAmount(monthlySalaryDto.getAmount());
-            monthlySalary.setMonthName(MonthName.valueOf(monthlySalaryDto.getMonthName()));
+            monthlySalary.setMonth(monthRepository.getOne(monthlySalaryDto.getMonthId()));
             monthlySalary.setWorker(optionalWorker.get());
 
             monthlySalaryRepository.save(monthlySalary);
