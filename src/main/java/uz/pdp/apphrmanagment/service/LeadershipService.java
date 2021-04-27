@@ -112,52 +112,5 @@ public class LeadershipService {
     }
 
 
-    public ApiResponse getSalaryOfWorker(GetSalaryDto getSalaryDto){
-        User user = allNeedfullMethod.getUserFromPrincipal();
-        if (user == null)
-            return new ApiResponse("Xatolik",false);
 
-        byte roleNumber = allNeedfullMethod.getRoleNumber(user.getAuthorities());
-
-        Optional<User> optionalWorker = userRepository.findById(getSalaryDto.getWorkerId());
-        if (!optionalWorker.isPresent())
-            return new ApiResponse("Ishchi toplimadi",false);
-
-        User worker = optionalWorker.get();
-
-        //DIRECTOR YOKI USHBU WORKER NI QO'SHGAN MANAGER BO'LSA
-        if (roleNumber == 2 || worker.getCreatedBy().equals(user.getId())){
-            List<MonthlySalary> salaryList;
-            //AGAR WORKER_ID BERILGAN BO'LSA
-            if (getSalaryDto.getWorkerId() != null) {
-                salaryList = monthlySalaryRepository.findAllByWorkerIdAndMonth_Id(getSalaryDto.getWorkerId(),getSalaryDto.getMonthId());
-            }
-            //AGAR WORKER_ID BERILMAGAN BO'LSA BARCHA XODIMLARGA BERILGAN OYLIKLAR RO'YXATI KETADI
-            salaryList = monthlySalaryRepository.findAllByMonth_Id(getSalaryDto.getMonthId());
-            return new ApiResponse("Muvaffaqiyatli bajarildi",true,salaryList);
-        }
-        return new ApiResponse("Xatolik",false);
-    }
-
-
-    public ApiResponse getCompleteTasks(){
-        User user = allNeedfullMethod.getUserFromPrincipal();
-        if (user == null)
-            return new ApiResponse("Xatolik",false);
-
-        byte roleNumber = allNeedfullMethod.getRoleNumber(user.getAuthorities());
-
-        //DIRECTOR BARCHA BAJARILGAN VAZIFALARNI KO'RA OLADI
-        if (roleNumber == 2){
-            List<Task> taskList = taskRepository.findAllByStatus(TaskStatus.STATUS_DONE);
-            return new ApiResponse("Muvaffaqyatli bajarildi",true,taskList);
-        }
-
-        //MANAGER O'ZI YARATGAN VA BAJARILGAN VAZIFALARNI KO'RA OLADI
-        if (roleNumber == 1){
-            List<Task> taskList = taskRepository.findAllByCreatedByAndStatus(user.getId(), TaskStatus.STATUS_DONE);
-            return new ApiResponse("Muvaffaqiyatli bajarildi",true,taskList);
-        }
-        return new ApiResponse("Xatolik",false);
-    }
 }

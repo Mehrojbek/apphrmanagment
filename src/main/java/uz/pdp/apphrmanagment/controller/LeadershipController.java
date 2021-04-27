@@ -12,6 +12,8 @@ import uz.pdp.apphrmanagment.payload.ApiResponse;
 import uz.pdp.apphrmanagment.payload.GetSalaryDto;
 import uz.pdp.apphrmanagment.payload.WorkerDto;
 import uz.pdp.apphrmanagment.service.LeadershipService;
+import uz.pdp.apphrmanagment.service.MonthlySalaryService;
+import uz.pdp.apphrmanagment.service.TaskService;
 
 import java.util.*;
 
@@ -20,6 +22,11 @@ import java.util.*;
 public class LeadershipController {
     @Autowired
     LeadershipService leadershipService;
+    @Autowired
+    MonthlySalaryService monthlySalaryService;
+    @Autowired
+    TaskService taskService;
+
 
     //GET ALL WORKER
     @GetMapping
@@ -40,7 +47,7 @@ public class LeadershipController {
     //COMPLETE BO'LGAN BARCHA VAZIFALAR
     @GetMapping("/completeTasks")
     public HttpEntity<?> getCompleteInDeadline(){
-        ApiResponse apiResponse = leadershipService.getCompleteTasks();
+        ApiResponse apiResponse = taskService.getCompleteTasks();
         return ResponseEntity.status(apiResponse.isSuccess()?200:401).body(apiResponse);
     }
 
@@ -52,7 +59,7 @@ public class LeadershipController {
      */
     @PostMapping("/salary")
     public HttpEntity<?> getSalaryOfWorker(@RequestBody GetSalaryDto getSalaryDto){
-        ApiResponse apiResponse = leadershipService.getSalaryOfWorker(getSalaryDto);
+        ApiResponse apiResponse = monthlySalaryService.getSalaryOfWorker(getSalaryDto);
         return ResponseEntity.status(apiResponse.isSuccess()?200:401).body(apiResponse);
     }
 

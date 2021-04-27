@@ -252,7 +252,26 @@ public class TaskService {
 
 
 
+    public ApiResponse getCompleteTasks(){
+        User user = allNeedfullMethod.getUserFromPrincipal();
+        if (user == null)
+            return new ApiResponse("Xatolik",false);
 
+        byte roleNumber = allNeedfullMethod.getRoleNumber(user.getAuthorities());
+
+        //DIRECTOR BARCHA BAJARILGAN VAZIFALARNI KO'RA OLADI
+        if (roleNumber == 2){
+            List<Task> taskList = taskRepository.findAllByStatus(TaskStatus.STATUS_DONE);
+            return new ApiResponse("Muvaffaqyatli bajarildi",true,taskList);
+        }
+
+        //MANAGER O'ZI YARATGAN VA BAJARILGAN VAZIFALARNI KO'RA OLADI
+        if (roleNumber == 1){
+            List<Task> taskList = taskRepository.findAllByCreatedByAndStatus(user.getId(), TaskStatus.STATUS_DONE);
+            return new ApiResponse("Muvaffaqiyatli bajarildi",true,taskList);
+        }
+        return new ApiResponse("Xatolik",false);
+    }
 
 
 
